@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>✨ Todo アプリ</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            width: 100%;
+            max-width: 500px;
+            padding: 40px 30px;
+            animation: slideUp 0.5s ease-out;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        h1 {
+            color: #667eea;
+            font-size: 2.5em;
+            margin-bottom: 30px;
+            text-align: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .input-container {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+        }
+
+        #todoInput {
+            flex: 1;
+            padding: 15px 20px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 16px;
+            transition: all 0.3s;
+        }
+
+        #todoInput:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        #addBtn {
+            padding: 15px 30px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        #addBtn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        #addBtn:active {
+            transform: translateY(0);
+        }
+
+        .filter-buttons {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            justify-content: center;
+        }
+
+        .filter-btn {
+            padding: 8px 16px;
+            background: #f5f5f5;
+            border: 2px solid transparent;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 14px;
+        }
+
+        .filter-btn.active {
+            background: #667eea;
+            color: white;
+        }
+
+        .filter-btn:hover {
+            border-color: #667eea;
+        }
+
+        #todoList {
+            list-style: none;
+        }
+
+        .todo-item {
+            background: #f9f9f9;
+            padding: 15px 20px;
+            margin-bottom: 10px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            transition: all 0.3s;
+            animation: slideIn 0.3s ease-out;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .todo-item:hover {
+            background: #f0f0f0;
+            transform: translateX(5px);
+        }
+
+        .todo-item.completed {
+            opacity: 0.6;
+        }
+
+        .todo-item.completed .todo-text {
+            text-decoration: line-through;
+            color: #999;
+        }
+
+        .checkbox {
+            width: 24px;
+            height: 24px;
+            cursor: pointer;
+            accent-color: #667eea;
+        }
+
+        .todo-text {
+            flex: 1;
+            font-size: 16px;
+            color: #333;
+        }
+
+        .delete-btn {
+            background: #ff6b6b;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.2s;
+        }
+
+        .delete-btn:hover {
+            background: #ff5252;
+            transform: scale(1.05);
+        }
+
+        .stats {
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 2px solid #e0e0e0;
+            display: flex;
+            justify-content: space-around;
+            font-size: 14px;
+            color: #666;
+        }
+
+        .stat-item {
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 24px;
+            font-weight: bold;
+            color: #667eea;
+            display: block;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: #999;
+            font-size: 18px;
+        }
+
+        .empty-state-icon {
+            font-size: 48px;
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>
+            <span>✨</span>
+            <span>Todoアプリ</span>
+        </h1>
+
+        <div class="input-container">
+            <input 
+                type="text" 
+                id="todoInput" 
+                placeholder="新しいタスクを入力..." 
+                autocomplete="off"
+            >
+            <button id="addBtn">追加</button>
+        </div>
+
+        <div class="filter-buttons">
+            <button class="filter-btn active" data-filter="all">すべて</button>
+            <button class="filter-btn" data-filter="active">未完了</button>
+            <button class="filter-btn" data-filter="completed">完了</button>
+        </div>
+
+        <ul id="todoList"></ul>
+
+        <div class="stats">
+            <div class="stat-item">
+                <span class="stat-number" id="totalCount">0</span>
+                <span>合計</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-number" id="activeCount">0</span>
+                <span>未完了</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-number" id="completedCount">0</span>
+                <span>完了</span>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let todos = JSON.parse(localStorage.getItem('todos')) || [];
+        let currentFilter = 'all';
+
+        const todoInput = document.getElementById('todoInput');
+        const addBtn = document.getElementById('addBtn');
+        const todoList = document.getElementById('todoList');
+        const filterBtns = document.querySelectorAll('.filter-btn');
+
+        // Todoを追加
+        function addTodo() {
+            const text = todoInput.value.trim();
+            if (text === '') return;
+
+            const todo = {
+                id: Date.now(),
+                text: text,
+                completed: false
+            };
+
+            todos.push(todo);
+            saveTodos();
+            todoInput.value = '';
+            renderTodos();
+        }
+
+        // Todoを削除
+        function deleteTodo(id) {
+            todos = todos.filter(todo => todo.id !== id);
+            saveTodos();
+            renderTodos();
+        }
+
+        // Todoの完了状態をトグル
+        function toggleTodo(id) {
+            const todo = todos.find(todo => todo.id === id);
+            if (todo) {
+                todo.completed = !todo.completed;
+                saveTodos();
+                renderTodos();
+            }
+        }
+
+        // LocalStorageに保存
+        function saveTodos() {
+            localStorage.setItem('todos', JSON.stringify(todos));
+        }
+
+        // Todoを表示
+        function renderTodos() {
+            const filteredTodos = todos.filter(todo => {
+                if (currentFilter === 'active') return !todo.completed;
+                if (currentFilter === 'completed') return todo.completed;
+                return true;
+            });
+
+            if (filteredTodos.length === 0) {
+                todoList.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-state-icon">📝</div>
+                        <div>タスクがありません</div>
+                    </div>
+                `;
+            } else {
+                todoList.innerHTML = filteredTodos.map(todo => `
+                    <li class="todo-item ${todo.completed ? 'completed' : ''}">
+                        <input 
+                            type="checkbox" 
+                            class="checkbox" 
+                            ${todo.completed ? 'checked' : ''}
+                            onchange="toggleTodo(${todo.id})"
+                        >
+                        <span class="todo-text">${todo.text}</span>
+                        <button class="delete-btn" onclick="deleteTodo(${todo.id})">削除</button>
+                    </li>
+                `).join('');
+            }
+
+            updateStats();
+        }
+
+        // 統計を更新
+        function updateStats() {
+            const total = todos.length;
+            const active = todos.filter(todo => !todo.completed).length;
+            const completed = todos.filter(todo => todo.completed).length;
+
+            document.getElementById('totalCount').textContent = total;
+            document.getElementById('activeCount').textContent = active;
+            document.getElementById('completedCount').textContent = completed;
+        }
+
+        // イベントリスナー
+        addBtn.addEventListener('click', addTodo);
+        todoInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') addTodo();
+        });
+
+        filterBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                filterBtns.forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                currentFilter = btn.dataset.filter;
+                renderTodos();
+            });
+        });
+
+        // 初期表示
+        renderTodos();
+    </script>
+</body>
+</html>
